@@ -89,8 +89,8 @@ Blockly.VerticalFlyout.prototype.getMetrics_ = function() {
   var metrics = {
     contentHeight: optionBox.height * this.workspace_.scale + 2 * this.MARGIN,
     contentWidth: optionBox.width * this.workspace_.scale + 2 * this.MARGIN,
-    contentTop: optionBox.y,
-    contentLeft: optionBox.x,
+    contentTop: optionBox.y - this.MARGIN,
+    contentLeft: optionBox.x - this.MARGIN,
 
     viewHeight: viewHeight,
     viewWidth: viewWidth,
@@ -117,7 +117,9 @@ Blockly.VerticalFlyout.prototype.setMetrics_ = function(xyRatio) {
     return;
   }
   if (typeof xyRatio.y == 'number') {
-    this.workspace_.scrollY = -metrics.contentHeight * xyRatio.y;
+    this.workspace_.scrollY =
+        -(metrics.contentTop +
+            (metrics.contentHeight - metrics.viewHeight) * xyRatio.y);
   }
   this.workspace_.translate(this.workspace_.scrollX + metrics.absoluteLeft,
       this.workspace_.scrollY + metrics.absoluteTop);
@@ -368,7 +370,7 @@ Blockly.VerticalFlyout.prototype.getClientRect = function() {
  * @protected
  */
 Blockly.VerticalFlyout.prototype.reflowInternal_ = function() {
-  this.workspace_.scale = this.targetWorkspace.scale;
+  this.workspace_.scale = this.getFlyoutScale();
   var flyoutWidth = 0;
   var blocks = this.workspace_.getTopBlocks(false);
   for (var i = 0, block; (block = blocks[i]); i++) {
